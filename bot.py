@@ -1,15 +1,44 @@
 import discord
 import os
+import random
 
 from dotenv import load_dotenv
 
+intents = discord.Intents.default()
+intents.members = True
+intents.presences = True 
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-
-client = discord.Client()
+SERVER = os.getenv('SERVER')
+client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    server = discord.utils.get(client.guilds, name=SERVER)
+    print(
+        f'{client.user} is connected to the following server:\n'
+        f'{server.name}(id: {server.id})\n'
+    )
+    members = '\n - '.join([member.name for member in server.members])
+    print(f'Server Members:\n - {members}')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content == 'report':
+        await message.channel.send(':eyes: Activity report :eyes:')
+        
+
+@client.event
+async def on_voice_state_update(member, before, after):
+    server = discord.utils.get(client.guilds, name=SERVER)
+    channel = discord.utils.get(server.channels, name='general')
+    if after.self_stream:
+        print("{} is now streaming on {}".format(member.name, after.channel.name))
+        await channel.send("{} is now streaming   :100: ! \nHop on {} to watch them :eyes: :eyes:".format(member.name, after.channel.name))
+
 
 client.run(TOKEN)
