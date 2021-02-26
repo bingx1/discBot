@@ -1,6 +1,7 @@
 import discord
 import os
 import random
+import scraper
 
 from dotenv import load_dotenv
 
@@ -27,9 +28,8 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-
-    if message.content == 'report':
-        await message.channel.send(':eyes: Activity report :eyes:')
+    if message.content == '!stock':
+        await message.channel.send(scraper.print_stock(scraper.items))
         
 
 @client.event
@@ -40,5 +40,7 @@ async def on_voice_state_update(member, before, after):
         print("{} is now streaming on {}".format(member.name, after.channel.name))
         await channel.send("{} is now streaming   :100: ! \nHop on {} to watch them :eyes: :eyes:".format(member.name, after.channel.name))
 
-
-client.run(TOKEN)
+# @client.event
+# async def on_member_uldate(before, after):
+if __name__ == "__main__":
+    client.run(TOKEN)
