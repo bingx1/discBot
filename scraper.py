@@ -1,12 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
+from pymongo import MongoClient
+import re 
+client = MongoClient()
+db = client.items
 
 items = ["https://www.rogueaustralia.com.au/monster-rhino-belt-squat-stand-alone-mg-black-au",
-         'https://www.rogueaustralia.com.au/the-ohio-bar-black-zinc-au',
          'https://www.rogueaustralia.com.au/rogue-tb-2-trap-bar-au',
          'https://www.rogueaustralia.com.au/rogue-mg-3-knurled-multi-grip-bar-au',
          'https://www.rogueaustralia.com.au/earthquake-bar-au',
          'https://www.rogueaustralia.com.au/rogue-ohio-deadlift-bar-black-zinc-au',
+	 'https://www.rogueaustralia.com.au/black-concept-2-model-d-rower-pm5-au',
          'https://www.rogueaustralia.com.au/rogue-stubby-axle-au']
 
 class Item:
@@ -34,8 +38,10 @@ def scrape_item(link, itemNo):
     if soup.find(class_="button btn-size-m red full"):
         inStock = True
     price = soup.find(class_="main-price").contents[0]
+    price = price.split('.')[0]
+    price = int(price.replace(',','')[2:])
     name = soup.find(class_='name').contents[0]
-    # print(name, price, inStock, link)
+    print(name, price, inStock, link)
     return Item(name, price, inStock, link, itemNo)
 
 
@@ -48,3 +54,6 @@ def print_stock(links):
     output = "```md\n{}```".format(body)
     print(output)
     return output
+
+if __name__ == "__main__":
+    print_stock(items)
