@@ -1,17 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import aiohttp
-import asyncio
 import db_handler
 from discord.ext import commands
-
-items = ["https://www.rogueaustralia.com.au/monster-rhino-belt-squat-stand-alone-mg-black-au",
-         'https://www.rogueaustralia.com.au/rogue-tb-2-trap-bar-au',
-         'https://www.rogueaustralia.com.au/rogue-mg-3-knurled-multi-grip-bar-au',
-         'https://www.rogueaustralia.com.au/earthquake-bar-au',
-         'https://www.rogueaustralia.com.au/rogue-ohio-deadlift-bar-black-zinc-au',
-         'https://www.rogueaustralia.com.au/black-concept-2-model-d-rower-pm5-au']
-
+import json
 
 class ItemData:
     def __init__(self, name, price, inStock, link):
@@ -30,20 +22,22 @@ class ItemData:
         return output
 
     def to_json(self):
-        return {'name': self.name, 'price': self.price, 'inStock': self.inStock, 'url': self.link}
+        return json.dumps({'name': self.name, 'price': self.price, 'inStock': self.inStock, 'url': self.link})
 
 
 class ScraperCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.session = aiohttp.ClientSession()
 
     @commands.command(name='stock', help='Fetches the current status of stocked items')
     async def get_items(self, ctx):
-        await ctx.send(print_stock(items))
+        await ctx.send(print_stock())
 
     @commands.command(name='list')
     async def list_items(self, ctx):
         tracked_items = db_handler.list_tracked_items()
+        tracked_items = "Currently tracking the following items: \n" + tracked_items
         print(tracked_items)
         await ctx.send(tracked_items)    
 
@@ -52,7 +46,7 @@ def setup(bot):
     return
 
 
-def fetch_item(link):
+def fetch_new_item(link):
     """Takes a valid URL, scrapes it and returns the items data - name, price, and current stock status"""
     page = requests.get(link)
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -79,17 +73,18 @@ def get_stock_status(link):
         return False
 
 
-def print_stock(links):
+def print_stock():
     """Returns a list of all items and their current stock status in markdown format for printing to discord"""
     body = ''
-    for i in range(len(links)):
-        item = fetch_item(links[i])
-        print(item)
-        body += ('\n' + str(i+1) + ". " + str(item))
+    items = db_handler.fetch_items_json()
+    for i, item in enumerate(items):
+        item_data = ItemData(item['name'],item['price'],item['inStock'],item['url'])
+        print(item_data)
+        body += ('\n' + str(i+1) + ". " + str(item_data))
     output = "```md\n{}```".format(body)
     return output
 
 
 if __name__ == "__main__":
-    out = print_stock(items)
+    out = print_stock()
     print(out)

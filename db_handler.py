@@ -1,6 +1,8 @@
 import mongoengine
+import json
 
 mongoengine.connect(db="items", host="localhost", port=27017)
+
 
 class Item(mongoengine.Document):
     name = mongoengine.StringField(required=True)
@@ -17,16 +19,19 @@ Function to put the item at the following url in the database
 
 def put_item(item_data):
     json = item_data.to_json()
-    if not exists(item_json=json):
-        new_item = Item(name=json['name'], price=json['price'],
-                    inStock=json['inStock'], url=json['url'])
+    new_item = Item.from_json(json)
+    if not exists(item_data.name):
         new_item.save()
+        print("{} succesfully added. Now tracking {}".format(item_data.name, item_data.name))
+    else:
+        print("Item already exists in the database. {} is already being tracked by the stock bot".format(
+            item_data.name))
     return
 
 
-def exists(item_json):
+def exists(item_name):
     for item in Item.objects:
-        if item.name == item_json['name']:
+        if item.name == item_name:
             return True
     return False
 
@@ -45,9 +50,14 @@ def list_tracked_items():
     return output
 
 
-# def update_items():
-    # for item in Item.objects:
+def fetch_items_json():
+    return [json.loads(item.to_json()) for item in Item.objects]
+
+def get_items():
+    return Item.objects
 
 if __name__ == "__main__":
     mongoengine.connect(db="items", host="localhost", port=27017)
     list_tracked_items()
+    x = fetch_items_json()
+    print(x)
