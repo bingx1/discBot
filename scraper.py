@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import aiohttp
 import db_handler
 from discord.ext import commands
 import json
@@ -28,7 +27,6 @@ class ItemData:
 class ScraperCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.session = aiohttp.ClientSession()
 
     @commands.command(name='stock', help='Fetches the current status of stocked items')
     async def get_items(self, ctx):
@@ -61,16 +59,6 @@ def fetch_new_item(link):
 def extract_price(price_string):
     """Converts a string in the form 'A$1,595.00' to an integer 1595"""
     return int(price_string.split('.')[0].replace(',', '')[2:])
-
-
-def get_stock_status(link):
-    """Checks whether the item at the given URL is in stock"""
-    page = requests.get(link)
-    soup = BeautifulSoup(page.text, 'html.parser')
-    if soup.find(class_="button btn-size-m red full"):
-        return True
-    else:
-        return False
 
 
 def print_stock():

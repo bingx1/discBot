@@ -5,6 +5,7 @@ import db_handler
 from discord.ext import commands, tasks
 import datetime
 
+
 class StockCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -19,15 +20,19 @@ class StockCog(commands.Cog):
     async def monitor_stock(self):
         async with self.lock:
             items = db_handler.get_items()
+            time = datetime.datetime.now()
+            time_formatted = time.strftime(r"%A, %d-%b %I:%M%p")
+            msg = "{} : Currently re-checking status of tracked items.".format(time_formatted)
+            print(msg)
+            for guild in self.bot.guilds:
+                await guild.system_channel.send(msg)            
             return await asyncio.gather(*(self.fetch_and_parse(item) for item in items))
-            # for item in items:
-                # await self.fetch_and_parse(item)
 
     @monitor_stock.after_loop
     async def on_monitor_cancel(self):
         if self.monitor_stock.is_being_cancelled():
             print("Stopping stock monitoring.\n")
-            self.session.close()
+            await self.session.close()
             print("Closing session.")
 
     async def fetch(self, url):
