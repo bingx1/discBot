@@ -41,6 +41,11 @@ class ScraperCog(commands.Cog):
     async def get_items(self, ctx):
         await ctx.send(print_stock(items))
 
+    @commands.command(name='list')
+    async def list_items(self, ctx):
+        tracked_items = db_handler.list_tracked_items()
+        print(tracked_items)
+        await ctx.send(tracked_items)    
 
 def setup(bot):
     bot.add_cog(ScraperCog(bot))
