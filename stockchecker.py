@@ -1,3 +1,4 @@
+from re import I
 from bs4 import BeautifulSoup
 import aiohttp
 import asyncio
@@ -59,11 +60,12 @@ class StockCog(commands.Cog):
         if soup.find(class_="button btn-size-m red full"):
             stock = True
         if stock != item.inStock:
-            msg = "The stock status of {} has changed!. Updating stock status in DB".format(
+            msg = "The stock status of {} has changed!".format(
                 item.name)
             item.inStock = stock
             item.save()
             await self.notify(msg)
+            await self.announce_restock(item)
         else:
             msg = "The stock status of {} has not changed.".format(item.name)
             print(msg)
@@ -73,6 +75,19 @@ class StockCog(commands.Cog):
         html = await self.fetch(item.url)
         await self.parse(html, item)
 
+    async def announce_restock(self, item):
+        embed = discord.Embed(title = item.name, url = item.url, color=discord.Color.gold())
+        embed.set_thumbnail(url = await self.get_thumbnail(item))
+        embed.set_author(name="StockBot")
+        embed.description = "{} is now back in stock! Visit the link to purchase.".format(item.name)
+        embed.add_field(name="Price", value="A${}".format(item.price), inline=False)
+        await self.channel.send(embed = embed)
+
+    async def get_thumbnail(self, item):
+        html = await self.fetch(item.url)
+        soup = BeautifulSoup(html, 'html.parser')
+        imgs = soup.find(class_="custom-scroll product-scroll")
+        return imgs.find(class_="image aspect-169 active i-c").findChild("img")['src']
 
 def setup(bot):
     bot.add_cog(StockCog(bot))
