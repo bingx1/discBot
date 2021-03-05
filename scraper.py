@@ -1,14 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
-
+import aiohttp
+import asyncio
+import db_handler
+from discord.ext import commands
 
 items = ["https://www.rogueaustralia.com.au/monster-rhino-belt-squat-stand-alone-mg-black-au",
          'https://www.rogueaustralia.com.au/rogue-tb-2-trap-bar-au',
          'https://www.rogueaustralia.com.au/rogue-mg-3-knurled-multi-grip-bar-au',
          'https://www.rogueaustralia.com.au/earthquake-bar-au',
          'https://www.rogueaustralia.com.au/rogue-ohio-deadlift-bar-black-zinc-au',
-         'https://www.rogueaustralia.com.au/black-concept-2-model-d-rower-pm5-au',
-         'https://www.rogueaustralia.com.au/rogue-stubby-axle-au']
+         'https://www.rogueaustralia.com.au/black-concept-2-model-d-rower-pm5-au']
 
 
 class ItemData:
@@ -28,7 +30,21 @@ class ItemData:
         return output
 
     def to_json(self):
-        return {'name': self.name, 'price': self.price, 'inStock': self.in_stock, 'url': self.link}
+        return {'name': self.name, 'price': self.price, 'inStock': self.inStock, 'url': self.link}
+
+
+class ScraperCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name='stock', help='Fetches the current status of stocked items')
+    async def get_items(self, ctx):
+        await ctx.send(print_stock(items))
+
+
+def setup(bot):
+    bot.add_cog(ScraperCog(bot))
+    return
 
 
 def fetch_item(link):
@@ -64,10 +80,11 @@ def print_stock(links):
     for i in range(len(links)):
         item = fetch_item(links[i])
         print(item)
-        body += (str(i+1) + ". " + str(item))
+        body += ('\n' + str(i+1) + ". " + str(item))
     output = "```md\n{}```".format(body)
     return output
 
 
 if __name__ == "__main__":
-    print_stock(items)
+    out = print_stock(items)
+    print(out)
