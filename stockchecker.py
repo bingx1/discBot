@@ -10,7 +10,7 @@ import discord
 class StockCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        # self.session = aiohttp.ClientSession()
         self.lock = asyncio.Lock()
         self.channel = None
         self.db_handler = DbHandler()
@@ -25,10 +25,8 @@ class StockCog(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print('StockCog is now ready!')
-        print('Logged in as ---->', self.bot.user)
-        print('ID:', self.bot.user.id)
-        print('Active in the following guilds: ', self.bot.guilds)
         server = self.bot.guilds[0]
+        print(self.bot.cogs)
         self.channel = discord.utils.get(server.channels, name='bot-notifications')
         self.monitor_stock.start()
 
@@ -47,7 +45,8 @@ class StockCog(commands.Cog):
     async def on_monitor_cancel(self):
         if self.monitor_stock.is_being_cancelled():
             print("\nStopping stock monitoring.")
-            await self.session.close()
+            webCog = self.bot.get_cog('WebCog')
+            await webCog.close_session()
             print("Closing session.")
 
     async def fetch(self, url):
@@ -72,22 +71,19 @@ class StockCog(commands.Cog):
 
 
     async def fetch_and_parse(self, item):
-        html = await self.fetch(item.url)
+        webCog = self.bot.get_cog('WebCog')
+        html = await webCog.fetch(item.url)
         await self.parse(html, item)
 
     async def announce_restock(self, item):
         embed = discord.Embed(title = item.name, url = item.url, color=discord.Color.green())
-        embed.set_thumbnail(url = await self.get_thumbnail(item))
+        embed.set_thumbnail(url = await self.get_thumbnail(item.url))
         embed.set_author(name="StockBot")
         embed.description = "{} is now back in stock! Visit the link to purchase.".format(item.name)
         embed.add_field(name="Price", value="A${}".format(item.price), inline=False)
         await self.channel.send(embed = embed)
 
-    async def get_thumbnail(self, item):
-        html = await self.fetch(item.url)
-        soup = BeautifulSoup(html, 'html.parser')
-        imgs = soup.find(class_="custom-scroll product-scroll")
-        return imgs.find(class_="image aspect-169 active i-c").findChild("img")['src']
+
 
 def setup(bot):
     bot.add_cog(StockCog(bot))

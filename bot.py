@@ -14,7 +14,7 @@ SERVER = os.getenv('SERVER')
 bot = commands.Bot(command_prefix='!',intents=intents)
 bot.load_extension("main_cog")
 bot.load_extension("stockchecker")
-
+bot.load_extension("web_cog")
 
 if __name__ == "__main__":
     bot.run(TOKEN)
