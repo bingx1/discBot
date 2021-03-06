@@ -1,7 +1,6 @@
 import mongoengine
 import json
-
-mongoengine.connect(db="items", host="localhost", port=27017)
+from connection import Connection
 
 
 class Item(mongoengine.Document):
@@ -12,52 +11,50 @@ class Item(mongoengine.Document):
     meta = {'collection': 'rogue'}
 
 
-'''
-Function to put the item at the following url in the database 
-'''
+class DbHandler():
 
+    def __init__(self):
+        self.db = "items"
 
-def put_item(item_data):
-    json = item_data.to_json()
-    new_item = Item.from_json(json)
-    if not exists(item_data.name):
-        new_item.save()
-        print("{} succesfully added. Now tracking {}".format(item_data.name, item_data.name))
-    else:
-        print("Item already exists in the database. {} is already being tracked by the stock bot".format(
-            item_data.name))
-    return
+    def put_item(self, item_data):
+        json = item_data.to_json()
+        new_item = Item.from_json(json)
+        with Connection():
+            if not self.exists(item_data.name):
+                new_item.save()
+                print("{} succesfully added. Now tracking {}".format(
+                    item_data.name, item_data.name))
+            else:
+                print("Item already exists in the database. {} is already being tracked by the stock bot".format(
+                    item_data.name))
+        return
 
+    def exists(self, item_name):
+        for item in Item.objects:
+            if item.name == item_name:
+                return True
+        return False
 
-def exists(item_name):
-    for item in Item.objects:
-        if item.name == item_name:
-            return True
-    return False
+    def list_tracked_items(self):
+        output = ""
+        with Connection():
+            for index, item in enumerate(Item.objects):
+                s = '{}. {} \n'.format(index + 1, item.name)
+                output += s
+                print(s)
+        return output
 
+    def fetch_items_json(self):
+        with Connection():
+            return [json.loads(item.to_json()) for item in Item.objects]
 
-'''
-Function to list all currently tracked items
-'''
+    def get_items(self):
+        with Connection():
+            return Item.objects
 
-
-def list_tracked_items():
-    output = ""
-    for index, item in enumerate(Item.objects):
-        s = '{}. {} \n'.format(index + 1, item.name)
-        output += s
-        print(s)
-    return output
-
-
-def fetch_items_json():
-    return [json.loads(item.to_json()) for item in Item.objects]
-
-def get_items():
-    return Item.objects
 
 if __name__ == "__main__":
-    mongoengine.connect(db="items", host="localhost", port=27017)
-    list_tracked_items()
-    x = fetch_items_json()
+    db = DbHandler()
+    # db.list_tracked_items()
+    x = db.fetch_items_json()
     print(x)

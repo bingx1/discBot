@@ -1,8 +1,7 @@
-from re import I
 from bs4 import BeautifulSoup
 import aiohttp
 import asyncio
-import db_handler
+from db_handler import DbHandler
 from discord.ext import commands, tasks
 import datetime
 import discord
@@ -14,6 +13,7 @@ class StockCog(commands.Cog):
         self.session = aiohttp.ClientSession()
         self.lock = asyncio.Lock()
         self.channel = None
+        self.db_handler = DbHandler()
 
     def cog_unload(self):
         return self.monitor_stock.cancel()
@@ -24,7 +24,7 @@ class StockCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Ready!')
+        print('StockCog is now ready!')
         print('Logged in as ---->', self.bot.user)
         print('ID:', self.bot.user.id)
         print('Active in the following guilds: ', self.bot.guilds)
@@ -35,7 +35,7 @@ class StockCog(commands.Cog):
     @tasks.loop(minutes=1.0)
     async def monitor_stock(self):
         async with self.lock:
-            items = db_handler.get_items()
+            items = self.db_handler.get_items()
             time = datetime.datetime.now()
             time_formatted = time.strftime(r"%A, %d-%b %I:%M%p")
             msg = "{} : Currently refreshing the status of tracked items.".format(
@@ -46,7 +46,7 @@ class StockCog(commands.Cog):
     @monitor_stock.after_loop
     async def on_monitor_cancel(self):
         if self.monitor_stock.is_being_cancelled():
-            print("Stopping stock monitoring.\n")
+            print("\nStopping stock monitoring.")
             await self.session.close()
             print("Closing session.")
 
@@ -76,7 +76,7 @@ class StockCog(commands.Cog):
         await self.parse(html, item)
 
     async def announce_restock(self, item):
-        embed = discord.Embed(title = item.name, url = item.url, color=discord.Color.gold())
+        embed = discord.Embed(title = item.name, url = item.url, color=discord.Color.green())
         embed.set_thumbnail(url = await self.get_thumbnail(item))
         embed.set_author(name="StockBot")
         embed.description = "{} is now back in stock! Visit the link to purchase.".format(item.name)

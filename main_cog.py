@@ -27,7 +27,14 @@ class ItemData:
 class ScraperCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.session = None
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print('ScraperCog is now ready!')
+        self.session = self.bot.get_cog("StockCog").session
+        print(self.session)
+        
     @commands.command(name='stock', help='Fetches the current status of stocked items')
     async def get_items(self, ctx):
         await ctx.send(print_stock())
