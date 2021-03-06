@@ -10,7 +10,7 @@ import discord
 class StockCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # self.session = aiohttp.ClientSession()
+        self.session = None
         self.lock = asyncio.Lock()
         self.channel = None
         self.db_handler = DbHandler()
@@ -26,7 +26,6 @@ class StockCog(commands.Cog):
     async def on_ready(self):
         print('StockCog is now ready!')
         server = self.bot.guilds[0]
-        print(self.bot.cogs)
         self.channel = discord.utils.get(server.channels, name='bot-notifications')
         self.monitor_stock.start()
 
@@ -45,8 +44,7 @@ class StockCog(commands.Cog):
     async def on_monitor_cancel(self):
         if self.monitor_stock.is_being_cancelled():
             print("\nStopping stock monitoring.")
-            webCog = self.bot.get_cog('WebCog')
-            await webCog.close_session()
+            await self.session.close()
             print("Closing session.")
 
     async def fetch(self, url):
@@ -72,6 +70,8 @@ class StockCog(commands.Cog):
 
     async def fetch_and_parse(self, item):
         webCog = self.bot.get_cog('WebCog')
+        if not self.session:
+            self.session = webCog.get_session()
         html = await webCog.fetch(item.url)
         await self.parse(html, item)
 

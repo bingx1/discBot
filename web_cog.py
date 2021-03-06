@@ -42,6 +42,9 @@ class WebCog(commands.Cog):
         ''' Closes the aiohttp client session '''
         self.session.close()
 
+    def get_session(self):
+        return self.session
+
 def setup(bot):
     bot.add_cog(WebCog(bot))
     return
