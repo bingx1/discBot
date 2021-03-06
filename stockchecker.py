@@ -26,7 +26,8 @@ class StockCog(commands.Cog):
     async def on_ready(self):
         print('StockCog is now ready!')
         server = self.bot.guilds[0]
-        self.channel = discord.utils.get(server.channels, name='bot-notifications')
+        self.channel = discord.utils.get(
+            server.channels, name='bot-notifications')
         self.monitor_stock.start()
 
     @tasks.loop(minutes=1.0)
@@ -42,31 +43,28 @@ class StockCog(commands.Cog):
 
     @monitor_stock.after_loop
     async def on_monitor_cancel(self):
+        ''' Closes the aiohttp connection '''
         if self.monitor_stock.is_being_cancelled():
             print("\nStopping stock monitoring.")
             await self.session.close()
             print("Closing session.")
-
-    async def fetch(self, url):
-        async with self.session.get(url) as response:
-            return await response.text()
 
     async def parse(self, html, item):
         soup = BeautifulSoup(html, 'html.parser')
         stock = False
         if soup.find(class_="button btn-size-m red full"):
             stock = True
+            item.lastStocked = datetime.datetime.now()
         if stock != item.inStock:
-            msg = "The stock status of {} has changed!".format(
+            msg = "{} is now back in stock!".format(
                 item.name)
             item.inStock = stock
-            item.save()
             await self.notify(msg)
             await self.announce_restock(item)
         else:
             msg = "The stock status of {} has not changed.".format(item.name)
             print(msg)
-
+        item.save()
 
     async def fetch_and_parse(self, item):
         webCog = self.bot.get_cog('WebCog')
@@ -76,13 +74,15 @@ class StockCog(commands.Cog):
         await self.parse(html, item)
 
     async def announce_restock(self, item):
-        embed = discord.Embed(title = item.name, url = item.url, color=discord.Color.green())
-        embed.set_thumbnail(url = await self.get_thumbnail(item.url))
+        embed = discord.Embed(title=item.name, url=item.url,
+                              color=discord.Color.green())
+        embed.set_thumbnail(url=await self.get_thumbnail(item.url))
         embed.set_author(name="StockBot")
-        embed.description = "{} is now back in stock! Visit the link to purchase.".format(item.name)
-        embed.add_field(name="Price", value="A${}".format(item.price), inline=False)
-        await self.channel.send(embed = embed)
-
+        embed.description = "{} is now back in stock! Visit the link to purchase.".format(
+            item.name)
+        embed.add_field(name="Price", value="A${}".format(
+            item.price), inline=False)
+        await self.channel.send(embed=embed)
 
 
 def setup(bot):
