@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import aiohttp
 import asyncio
-from db_handler import DbHandler
+from db_handler import DbHandler, Item
 from discord.ext import commands, tasks
 import datetime
 import discord
@@ -18,7 +18,8 @@ class StockCog(commands.Cog):
     def cog_unload(self):
         return self.monitor_stock.cancel()
 
-    async def notify(self, msg):
+    async def notify(self, msg: str):
+        ''' Sends a message [msg] to the discord channel'''
         print(msg)
         await self.channel.send(msg)
 
@@ -32,11 +33,12 @@ class StockCog(commands.Cog):
 
     @tasks.loop(minutes=1.0)
     async def monitor_stock(self):
+        ''' Refreshes the status of all items every minute '''
         async with self.lock:
             items = self.db_handler.get_items()
             time = datetime.datetime.now()
-            time_formatted = time.strftime(r"%A, %d-%b %I:%M%p")
-            msg = "{} : Currently refreshing the status of tracked items.".format(
+            time_formatted = time.strftime(r"%A, %b %d %I:%M%p")
+            msg = "{} :  refreshing the status of tracked items".format(
                 time_formatted)
             await self.notify(msg)
             return await asyncio.gather(*(self.fetch_and_parse(item) for item in items))
@@ -49,7 +51,8 @@ class StockCog(commands.Cog):
             await self.session.close()
             print("Closing session.")
 
-    async def parse(self, html, item):
+    async def parse(self, html: str, item: Item) -> None:
+        '''Function to process the html and update the matching item in the DB accordingly '''
         soup = BeautifulSoup(html, 'html.parser')
         stock = False
         if soup.find(class_="button btn-size-m red full"):
@@ -67,6 +70,7 @@ class StockCog(commands.Cog):
         item.save()
 
     async def fetch_and_parse(self, item):
+        ''' Calls the webCog to perform a GET request for the item and processes the payload '''
         webCog = self.bot.get_cog('WebCog')
         if not self.session:
             self.session = webCog.get_session()
@@ -74,6 +78,7 @@ class StockCog(commands.Cog):
         await self.parse(html, item)
 
     async def announce_restock(self, item):
+        ''' Sends an embed to the bot-notifications channel containing a description of the restocked item and a link to purchase '''
         embed = discord.Embed(title=item.name, url=item.url,
                               color=discord.Color.green())
         embed.set_thumbnail(url=await self.get_thumbnail(item.url))

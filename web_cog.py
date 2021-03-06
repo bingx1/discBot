@@ -56,11 +56,11 @@ def to_json(dic: dict) -> str:
 
 
 def extract_price(price_string: str) -> int:
-    """Converts a string in the form 'A$1,595.00' to an integer 1595"""
+    """Helper function to convert a string in the form 'A$1,595.00' to an integer 1595"""
     return int(price_string.split('.')[0].replace(',', '')[2:])
 
 
 def get_thumbnail(soup: BeautifulSoup) -> str: 
-    ''' Retrieves the url location of the items thumbnail'''
+    '''Helper function to retrieve the url location of the items thumbnail from html'''
     imgs = soup.find(class_="custom-scroll product-scroll")
     return imgs.find(class_="image aspect-169 active i-c").findChild("img")['src']

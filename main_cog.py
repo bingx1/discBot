@@ -24,14 +24,14 @@ class MainCog(commands.Cog):
     async def get_items(self, ctx):
         await ctx.send(self.format_items())
 
-    @commands.command(name='list')
+    @commands.command(name='list', help = 'Lists all items that are currently being tracked by the bot')
     async def list_items(self, ctx):
         tracked_items = self.db_handler.list_tracked_items()
         tracked_items = "Currently tracking the following items: \n" + tracked_items
         print(tracked_items)
         await ctx.send(tracked_items)
 
-    @commands.command(name='add')
+    @commands.command(name='add', help = 'Adds an item to the list of items tracked by the StockBot')
     async def add_items(self, ctx, *args):
         web_cog = self.bot.get_cog("WebCog")
         for arg in args:
@@ -58,11 +58,8 @@ def setup(bot):
 
 
 def is_valid_url(url):
+    ''' Checks whether a given string is a valid url '''
     pattern = re.compile(
         r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&=]*)")
     return re.match(pattern, url)
 
-
-# if __name__ == "__main__":
-
-    # print(out)

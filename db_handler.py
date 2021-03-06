@@ -26,7 +26,7 @@ class DbHandler():
     def __init__(self):
         self.db = "items"
 
-    def put_item(self, json_input):
+    def put_item(self, json_input: json) -> None:
         ''' Puts an item using the json data passed into the database''' 
         new_item = Item.from_json(json_input)
         with Connection():
@@ -39,7 +39,7 @@ class DbHandler():
                     new_item.name))
         return
 
-    def exists(self, item_name):
+    def exists(self, item_name: str) -> bool:
         ''' Checks to see whether an item with the same name already exists in the database'''
         for item in Item.objects:
             if item.name == item_name:
@@ -69,6 +69,5 @@ class DbHandler():
 
 if __name__ == "__main__":
     db = DbHandler()
-    # db.list_tracked_items()
     x = db.fetch_items_json()
     print(x)
