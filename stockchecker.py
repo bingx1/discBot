@@ -38,7 +38,7 @@ class StockCog(commands.Cog):
             items = self.db_handler.get_items()
             time = datetime.datetime.now()
             time_formatted = time.strftime(r"%A, %b %d %I:%M%p")
-            msg = "{} :  refreshing the status of tracked items".format(
+            msg = "```asciidoc\n{} :: Updating the status of tracked items```".format(
                 time_formatted)
             await self.notify(msg)
             return await asyncio.gather(*(self.fetch_and_parse(item) for item in items))
