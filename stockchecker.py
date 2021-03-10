@@ -81,7 +81,7 @@ class StockCog(commands.Cog):
         ''' Sends an embed to the bot-notifications channel containing a description of the restocked item and a link to purchase '''
         embed = discord.Embed(title=item.name, url=item.url,
                               color=discord.Color.green())
-        embed.set_thumbnail(url=await self.get_thumbnail(item.url))
+        embed.set_thumbnail(url=await item.img_url)
         embed.set_author(name="StockBot")
         embed.description = "{} is now back in stock! Visit the link to purchase.".format(
             item.name)

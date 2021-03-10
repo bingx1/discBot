@@ -3,4 +3,4 @@
 #Ignore git and cache
 .git
 .cache
-
+.env

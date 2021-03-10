@@ -9,7 +9,7 @@ class Item(mongoengine.Document):
     inStock = mongoengine.BooleanField(required=True)
     url = mongoengine.URLField(required=True)
     lastStocked = mongoengine.DateTimeField()
-    img_url = mongoengine.URLField()
+    img_url = mongoengine.URLField(required=True)
     meta = {'collection': 'rogue'}
 
     def __str__(self) -> str:

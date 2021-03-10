@@ -1,7 +1,6 @@
 import discord
 import os
 from discord.ext import commands
-from dotenv import load_dotenv
 
 # Set-up intents
 intents = discord.Intents.default()
@@ -9,7 +8,6 @@ intents.members = True
 intents.presences = True
 
 # Load environment variables
-load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Set-up bot and load cogs
