@@ -1,0 +1,6 @@
+#Ignore the venv
+*/bot-env*
+#Ignore git and cache
+.git
+.cache
+
