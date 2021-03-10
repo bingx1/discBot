@@ -1,5 +1,18 @@
 version: "3.9"
 services:
   mongodb:
-    image: mongo
-	
+    image: mongo:latest
+    volumes:
+      - "mongodata:/data/db"
+
+  stockbot:
+    command: python3 bot.py
+    image: bingx1/stockbot
+    depends_on:
+      - mongodb
+    env_file:
+      - bot.env
+
+volumes:
+  mongodata:
+    driver: local
