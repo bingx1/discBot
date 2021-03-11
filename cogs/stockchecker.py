@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import aiohttp
 import asyncio
-from db_handler import DbHandler, Item
+from util.db_handler import DbHandler, Item
 from discord.ext import commands, tasks
 import datetime
 import discord
@@ -81,7 +81,7 @@ class StockCog(commands.Cog):
         ''' Sends an embed to the bot-notifications channel containing a description of the restocked item and a link to purchase '''
         embed = discord.Embed(title=item.name, url=item.url,
                               color=discord.Color.green())
-        embed.set_thumbnail(url=await item.img_url)
+        embed.set_thumbnail(url= item.img_url)
         embed.set_author(name="StockBot")
         embed.description = "{} is now back in stock! Visit the link to purchase.".format(
             item.name)

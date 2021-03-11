@@ -1,7 +1,14 @@
 import mongoengine
 import json
-from connection import Connection
 
+class Connection:
+    def __enter__(self):
+        self.conn = mongoengine.connect(db="items", host="mongodb")
+        print("Connected to mongodb")
+        return self.conn
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.conn.close()
 
 class Item(mongoengine.Document):
     name = mongoengine.StringField(required=True)
