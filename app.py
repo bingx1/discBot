@@ -1,7 +1,5 @@
 from flask import Flask, jsonify, request, render_template
-# from flask_bootstrap import Bootstrap
 app = Flask(__name__)
-# bootstrap = Bootstrap(app)
 
 @app.route('/index')
 @app.route('/')
@@ -16,6 +14,9 @@ def index():
 def fetch_all_items():
     return
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 if __name__ == "__main__":
     app.run()
