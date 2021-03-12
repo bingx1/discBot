@@ -18,6 +18,6 @@ class Item(mongoengine.Document):
             self.name, self.price, self.url, stock_msg, self.lastStocked)
 
 class Change(mongoengine.Document):
-    name = mongoengine.StringFIeld(required=True)
+    name = mongoengine.StringField(required=True)
     restock = mongoengine.URLField(required=True)
-    other = mongoengine.BooleanFiled()
+    other = mongoengine.BooleanField()

@@ -1,0 +1,23 @@
+<table class="table table-hover">
+    <tr>
+        <td>
+            <a href={{ item.url }}>
+                <img src="{{ item.img_url }}" width = 500 height = 300/>
+            </a>
+        </td>
+        <td>
+            <a href={{ item.url }}>
+                {{ item.name }}
+            </a>
+            <br>
+            Price: {{ item.price}}
+            <br>
+            {% if item.stock %}
+            {{ item.name }} is in stock!
+            {% else %}
+            Out of stock
+            {% endif %}
+            <br>
+        </td>
+    </tr>
+</table>
