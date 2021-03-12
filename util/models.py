@@ -16,3 +16,8 @@ class Item(mongoengine.Document):
             stock_msg = '> Out of stock'
         return "{}\n[${}]({})\n{}\n < Last in stock: {} >\n".format(
             self.name, self.price, self.url, stock_msg, self.lastStocked)
+
+class Change(mongoengine.Document):
+    name = mongoengine.StringFIeld(required=True)
+    restock = mongoengine.URLField(required=True)
+    other = mongoengine.BooleanFiled()
