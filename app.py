@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request, render_template
+from util.db_handler import DbHandler
 app = Flask(__name__)
+DbHandler = DbHandler()
 
 @app.route('/index')
 @app.route('/')
@@ -18,5 +20,13 @@ def fetch_all_items():
 def about():
     return render_template('about.html')
 
+@app.route('/search', methods = ['GET','POST'])
+def search():
+    if request.method == 'POST':
+        req = request.form
+        print(req)
+        return render_template('search.html')
+    return render_template('search.html')
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
