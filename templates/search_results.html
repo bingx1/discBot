@@ -1,0 +1,6 @@
+{% extends "base.html" %} 
+{% block app_content %}
+<h1>Search results for '{{ query }}'</h1>
+{% for item in items %} {% include '_item.html' %} {% endfor %}
+{% endblock %}
+
