@@ -9,10 +9,9 @@
       <h3 class="mb-0">{{ item.name }}</h3>
       <div class="mb-1 text-muted">${{ item.price }}</div>
       <p class="card-text mb-auto">
-        {% if item.stock %} The {{ item.name }} is <a style="color:green"> in stock!</a> Head to the link below to purchase now. {% else %} The {{ item.name }} is <a style="color:crimson">out of stock</a>. Please check back later for updates or join our discord server to be notified of restocks!
+        {% if item.stock %}<a style="color:green"> In stock</a><br>Head to the link below to purchase now.<br><a href={{ item.url }} class="stretched-link">Link to purchase</a>{% else %} <a style="color:crimson">Out of stock</a><br>Please check back later for updates or join our discord server to be notified of restocks!
         {% endif %}
       </p>
-      <a href={{ item.url }} class="stretched-link">Link to purchase</a>
     </div>
     <div class="col-auto d-none d-lg-block">
       <img src={{ item.img_url }} class="img-thumbnail" alt="..." width="200" height="300">
