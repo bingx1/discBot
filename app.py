@@ -10,10 +10,16 @@ items = [{"name" : "Rogue 45LB Ohio Power Bar - Bare Steel", 'manufacturer':'Rog
          {'name': 'Rogue 20KG Ohio Power Bar - Stainless Steel', 'manufacturer':'Rogue','price': 680, 'stock': True, 'url': 'https://www.rogueaustralia.com.au/rogue-20-kg-ohio-power-bar-stainless-steel-au', 'img_url':'https://assets.roguefitness.com/f_auto,q_auto,h_400,b_rgb:f8f8f8/catalog/Weightlifting%20Bars%20and%20Plates/Barbells/Mens%2020KG%20Barbells/RA0692-SSDC/20kg-ohio-power-bar-header-1_1_IPF_qbhfyb.jpg'},
          {'name': 'ATX Buffalo Olympic Bar', 'manufacturer':'ATX', 'price': 560, 'stock': False, 'url':'https://samsfitness.com.au/barbells/specialty-olympic-bars/buffalo-squat-bar', 'img_url':'https://samsfitness.com.au/image/cache/catalog/ATX-LH-BUFFALO/atx-buffalo-bar-800x800.jpg'}]
 
+changes = [{"item_name" : "Rogue 45LB Ohio Power Bar - Bare Steel", 'restock': True, 'time': '7:15PM', 'date': '13/03/2021'},
+           {"item_name" : "Rogue 45LB Ohio Power Bar - Bare Steel", 'restock': False, 'time': '8:33AM', 'date': '15/03/2021'},
+           {"item_name" : "Rogue 20KG Ohio Power Bar - Stainless Steel", 'restock': True, 'time': '4:45PM', 'date': '12/03/2021'},
+           {"item_name" : "ATX Buffalo Olympic Bar", 'restock': True, 'time': '9:14AM', 'date': '11/03/2021'},
+           {"item_name" : "Rogue Combo Rack", 'restock': False, 'time': '11:33AM', 'date': '10/03/2021'}]
+
 @app.route('/index')
 @app.route('/')
 def index():
-    return render_template('index.html', title='Home', items=items)
+    return render_template('index.html', title='Home', items=items[:2])
 
 
 @app.route('/api/items/all', methods=['GET'])
@@ -45,7 +51,7 @@ def parse_query(query, items):
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', number=len(items), changes = changes)
 
 if __name__ == "__main__":
     app.run(debug=True)
