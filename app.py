@@ -42,13 +42,15 @@ def parse_query(query, items):
 @app.route('/items')
 def get_items():
     all_items = DbHandler.fetch_items_dict()
-    return render_template('items.html', items = all_items)
+    return render_template('items.html', number = len(all_items), items = all_items)
 
 
 @app.route('/dashboard')
 def dashboard():
     all_changes = DbHandler.fetch_changes_dict()
-    return render_template('dashboard.html', number=10, changes = all_changes)
+    items = DbHandler.fetch_items_dict()
+    in_stock = [item for item in items if item['stock']]
+    return render_template('dashboard.html', number=10, changes = all_changes, items=in_stock)
 
 if __name__ == "__main__":
     app.run(debug=True)
