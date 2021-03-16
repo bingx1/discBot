@@ -46,23 +46,27 @@ class DbHandler():
                 print(s)
         return output
 
-    def fetch_items_json(self):
+    def fetch_items_dict(self):
         ''' Returns a list of items as python dictionaries'''
         with Connection():
-            return [json.loads(item.to_json()) for item in Item.objects]
+            return [item._data for item in Item.objects]
 
-    def fetch_changes_json(self):
+    def fetch_changes_dict(self):
         ''' Returns a list of changes as python dictionaries'''
         with Connection():
-            return [json.loads(change.to_json()) for change in Change.objects]
+            return [change._data for change in Change.objects]
 
     def get_items(self):
         ''' Returns a list of all the Item objects in the database'''
         with Connection():
             return Item.objects
 
+    def get_changes(self):
+        ''' Returns a list of all the Item objects in the database'''
+        with Connection():
+            return Change.objects
 
 if __name__ == "__main__":
     db = DbHandler()
-    x = db.fetch_items_json()
+    x = db.fetch_items_dict()
     print(x)
