@@ -61,7 +61,10 @@ def get_items():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html', number=len(items), changes = changes)
+    all_changes = DbHandler.fetch_changes_json()
+    for change in all_changes:
+        print(change['timestamp'])
+    return render_template('dashboard.html', number=len(items), changes = all_changes)
 
 if __name__ == "__main__":
     app.run(debug=True)

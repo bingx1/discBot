@@ -24,3 +24,4 @@ class Change(mongoengine.Document):
     item_name = mongoengine.StringField(required=True)
     restock = mongoengine.BooleanField(required=True)
     timestamp = mongoengine.DateTimeField(required=True)
+    meta = {'collection': 'changes'}

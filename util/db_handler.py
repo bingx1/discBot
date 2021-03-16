@@ -1,6 +1,6 @@
 import mongoengine
 import json
-from util.models import Item
+from util.models import Change, Item
 
 class Connection:
     def __enter__(self):
@@ -50,6 +50,11 @@ class DbHandler():
         ''' Returns a list of items as python dictionaries'''
         with Connection():
             return [json.loads(item.to_json()) for item in Item.objects]
+
+    def fetch_changes_json(self):
+        ''' Returns a list of changes as python dictionaries'''
+        with Connection():
+            return [json.loads(change.to_json()) for change in Change.objects]
 
     def get_items(self):
         ''' Returns a list of all the Item objects in the database'''
