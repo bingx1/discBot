@@ -4,7 +4,7 @@ from util.models import Item
 
 class Connection:
     def __enter__(self):
-        self.conn = mongoengine.connect(db="items", host="mongodb")
+        self.conn = mongoengine.connect(db="items")
         print("Connected to mongodb")
         return self.conn
 

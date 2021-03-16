@@ -16,6 +16,8 @@ changes = [{"item_name" : "Rogue 45LB Ohio Power Bar - Bare Steel", 'restock': T
            {"item_name" : "Rogue 20KG Ohio Power Bar - Stainless Steel", 'restock': True, 'time': '4:45PM', 'date': '12/03/2021'},
            {"item_name" : "ATX Buffalo Olympic Bar", 'restock': True, 'time': '9:14AM', 'date': '11/03/2021'},
            {"item_name" : "Rogue Combo Rack", 'restock': False, 'time': '11:33AM', 'date': '10/03/2021'}]
+
+
  
 @app.route('/index')
 @app.route('/')
@@ -50,8 +52,11 @@ def parse_query(query, items):
                 result.append(item)
     return result
 
-# @app.route('/items')
-    # req = request.form
+@app.route('/items')
+def get_items():
+    all_items = DbHandler.fetch_items_json()
+    print(all_items)
+    return render_template('items.html', items = all_items)
 
 
 @app.route('/dashboard')

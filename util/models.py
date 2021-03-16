@@ -2,15 +2,16 @@ import mongoengine
 
 class Item(mongoengine.Document):
     name = mongoengine.StringField(required=True)
+    manufacturer = mongoengine.StringField()
     price = mongoengine.IntField()
-    inStock = mongoengine.BooleanField(required=True)
+    stock = mongoengine.BooleanField(required=True)
     url = mongoengine.URLField(required=True)
     lastStocked = mongoengine.DateTimeField()
     img_url = mongoengine.URLField(required=True)
-    meta = {'collection': 'rogue'}
+    meta = {'collection': 'items'}
 
     def __str__(self) -> str:
-        if self.inStock:
+        if self.stock:
             stock_msg = "# **In stock**"
         else:
             stock_msg = '> Out of stock'
