@@ -1,7 +1,9 @@
 import discord
 import os
 from discord.ext import commands
+from dotenv import load_dotenv
 
+load_dotenv()
 # Set-up intents
 intents = discord.Intents.default()
 intents.members = True
