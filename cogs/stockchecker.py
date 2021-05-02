@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-import aiohttp
 import asyncio
 from util.db_handler import DbHandler 
 from util.models import Item

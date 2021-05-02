@@ -1,8 +1,5 @@
-from bs4 import BeautifulSoup
 from util.db_handler import DbHandler 
 from discord.ext import commands
-import json
-import aiohttp
 import re
 
 

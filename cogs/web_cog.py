@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import aiohttp
-import asyncio
 from discord.ext import commands, tasks
 import discord
 import json
